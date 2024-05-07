@@ -1,0 +1,574 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "EcoStruxure™ Energy LEED Scoring & benchmarking Data API",
+    "description": "# Overview\n\nEcoStruxure™ Energy LEED Scoring & benchmarking Data API allows customers to configure buildings that need benchmarking by calculating performance scores using the building energy and sustainability data.\n\n## API overview and usage\n\nThis API enables the following operations:\n\n**Sites**\n* Retrieve all sites to which the connected user has access, along site metadata needed for performance scores calculation (e.g. gross area, building occupants, operating hours, etc.)\n\n**Performance Scores**\n* Allow the user to request site for performance score calculation \n* Read current and historical scores for a given site\n* Supported Types: Daily, Monthly, Average, Local Average\n* Supported Categories: Energy, Water, Waste, Transportation, Human Experience, Re-Entry\n\n\n## How it works\n\nThis API works for any Schneider Electric customer who has an identity in Schneider Electric system, and site data associated with its identity.\n\n**Step 1:** In order to enquire the customer data, a Personal Access Token (PAT) has to be generated from the Exchange Developer Portal on the product page after subscription.\n> The customer will have to provide their consent while generating PAT to share the building measurement data with scoring partner.\n\n**Step 2:** Enquire all the sites which the customer is authorized to calculate the performance scores.\n\n**Step 3:** Send requests to calculate the performance score for a given site.\n\n**Step 4:** Fetch all current and historical scores.\n\n![High-level flow diagram](https://raw.githubusercontent.com/ecostruxure-openapi/public-images/main/energy-sustainability-scoring/user-edition.png \"High level flow diagram\")\n\n# Documentation\n    \n## How to sign up\n    \n**Step 1:** [Register or login](https://exchange.se.com) with an Exchange account.\n\n**Step 2:** Subscribe to the [API product in our Shop](https://exchange.se.com).\n\n**Step 3:** After subscription, API credentials and usage details for the API are available in developer portal.\n\n## Code Samples\n\nYou can leverage the code samples provided to integrate faster in your application.\n\n<div id=\"gitsample\"></div>\n\n## Support\n\nContact our Exchange support team at exchange.support@se.com and include,\n\n    - Endpoint URL\n    - Request/Response of the URL\n    - Any additional information like Screenshots, Postman collections\n\nGet help from the community [here](https://community.se.com/t5/Green-Building-Scoring-and/bd-p/green-building-certification).\n\n---",
+    "version": "Customer Edition 1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.exchange.se.com/ecostruxure/user/scoring/v1"
+    }
+  ],
+  "x-tagGroups": [
+    {
+      "name": "API specification",
+      "tags": [
+        "Site",
+        "Performance Score"
+      ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "Site",
+      "description": "Everything about your sites where the compatible EcoStruxure offers are deployed."
+    },
+    {
+      "name": "Performance Score",
+      "description": "Everything about your energy and sustainability scores."
+    }
+  ],
+  "paths": {
+    "/sites": {
+      "get": {
+        "summary": "Fetch sites",
+        "description": "Retrieve all sites and related metadata",
+        "operationId": "listSites",
+        "tags": [
+          "Site"
+        ],
+        "responses": {
+          "200": {
+            "description": "Found Sites",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Site"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "PersonalAccessToken": [
+              "read:site"
+            ]
+          }
+        ]
+      }
+    },
+    "/sites/{site-id}/performance-scores": {
+      "get": {
+        "summary": "Get Performance Score",
+        "description": "Retrieve all performance scores for a given site",
+        "operationId": "listPerformanceScores",
+        "tags": [
+          "Performance Score"
+        ],
+        "parameters": [
+          {
+            "name": "site-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "a483d4-e5be-4521-9f92-5400f5"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "daily",
+                  "monthly",
+                  "localAverage",
+                  "average"
+                ],
+                "example": "daily"
+              }
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "energy",
+                  "water",
+                  "waste",
+                  "transportation",
+                  "humanExperience",
+                  "reEntry"
+                ],
+                "example": "energy"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Found Scores",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PerformanceScore"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Site Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "PersonalAccessToken": [
+              "read:energy-score"
+            ]
+          }
+        ]
+      }
+    },
+    "/sites/{site-id}/scoring-requests": {
+      "post": {
+        "summary": "Create Scoring Request",
+        "description": "User select a site for scoring and thus automatically share timeseries related information to calculate scores",
+        "operationId": "createScoringRequest",
+        "tags": [
+          "Performance Score"
+        ],
+        "parameters": [
+          {
+            "name": "site-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "a483d4-e5be-4521-9f92-5400f5"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScoringRequest"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "PersonalAccessToken": [
+              "write:scoring-request"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "summary": "Scoring Request Status",
+        "description": "Allows end user to check the status of the site configured for performance scoring.",
+        "operationId": "getScoringRequestStatus",
+        "tags": [
+          "Performance Score"
+        ],
+        "parameters": [
+          {
+            "name": "site-id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "a483d4-e5be-4521-9f92-5400f5"
+            }
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "example": 12
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ScoringRequest"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "PersonalAccessToken": [
+              "write:scoring-request"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "PersonalAccessToken": {
+        "type": "http",
+        "description": "Personal access token based authentication and authorization. You can generate personal access token for APIs through Schneider Electric Developer Portal, visit https://exchange.se.com/develop",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Address": {
+        "type": "object",
+        "title": "Address",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "12 Baker Street"
+          },
+          "city": {
+            "type": "string",
+            "example": "London"
+          },
+          "countryIsoCode": {
+            "type": "string",
+            "example": "UK"
+          },
+          "zipCode": {
+            "type": "string",
+            "example": 3338
+          },
+          "stateProvince": {
+            "type": "string",
+            "example": "AZ"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "GMT"
+          },
+          "coordinates": {
+            "type": "object",
+            "title": "Coordinates",
+            "properties": {
+              "latitude": {
+                "type": "number",
+                "example": 51.52
+              },
+              "longitude": {
+                "type": "number",
+                "example": -0.15
+              },
+              "elevation": {
+                "type": "number",
+                "example": 38
+              }
+            }
+          }
+        }
+      },
+      "Site": {
+        "type": "object",
+        "title": "Site",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "ac64ac6a-abfd-4f5e-9d38-81102c0ca"
+          },
+          "name": {
+            "type": "string",
+            "example": "ACME Headquarters"
+          },
+          "type": {
+            "type": "string",
+            "example": "Retail"
+          },
+          "sourceSystemId": {
+            "type": "integer",
+            "example": 178654
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "grossArea": {
+                "type": "integer",
+                "example": 421
+              },
+              "buildingOccupants": {
+                "type": "integer",
+                "example": 49
+              },
+              "daysPerWeekWithVisitors": {
+                "type": "integer",
+                "example": 7
+              },
+              "numberOfVisitorsPerDay": {
+                "type": "integer",
+                "example": 548
+              },
+              "visitDuration": {
+                "type": "number",
+                "format": "double",
+                "example": 0.0208
+              },
+              "weeklyOperatingHours": {
+                "type": "integer",
+                "example": 168
+              }
+            }
+          },
+          "postalAddress": {
+            "$ref": "#/components/schemas/Address"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "title": "Error",
+        "description": "Error occurred while handling the request (based on rfc7807)",
+        "properties": {
+          "type": {
+            "description": "A URI reference [RFC3986] that identifies the problem type.",
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "description": "A short, human-readable summary of the problem type.",
+            "type": "string"
+          },
+          "status": {
+            "description": "The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.",
+            "type": "number"
+          },
+          "instance": {
+            "description": "A URI reference that identifies the specific occurrence of the problem.",
+            "type": "string"
+          },
+          "detail": {
+            "description": "A human-readable explanation specific to this occurrence of the problem.",
+            "type": "string"
+          },
+          "debugging": {
+            "description": "Debugging information for DEV and QA environments.",
+            "type": "string"
+          },
+          "invalid-params": {
+            "description": "An array of validation errors.",
+            "type": "array",
+            "items": {
+              "description": "The validation error descriptor.",
+              "type": "object",
+              "required": [
+                "path",
+                "name",
+                "reason"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "reason": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "PerformanceScore": {
+        "type": "object",
+        "title": "Performance Score",
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "score": {
+            "type": "number",
+            "example": 94.99
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "daily",
+              "monthly",
+              "localAverage",
+              "average"
+            ],
+            "example": "daily"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "energy",
+              "water",
+              "waste",
+              "transportation",
+              "humanExperience",
+              "reEntry"
+            ],
+            "example": "energy"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "date",
+          "score",
+          "type",
+          "category"
+        ]
+      },
+      "ScoringRequest": {
+        "type": "object",
+        "title": "Scoring Request",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 12
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "CONFIGURED",
+              "REJECTED"
+            ],
+            "example": "CONFIGURED"
+          },
+          "detail": {
+            "type": "string",
+            "example": "site is configured successfully"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "datetime",
+            "example": "17-12-2022T13:01:97Z"
+          }
+        }
+      }
+    }
+  }
+}
