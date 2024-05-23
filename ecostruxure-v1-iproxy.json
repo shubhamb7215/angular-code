@@ -1,0 +1,5222 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "EcoStruxure™ Building Data API",
+    "description": "# Overview\n\nEcoStruxure™ Building Data API provides access to building data from Schneider Electric cloud, enabling the monitoring and control of building systems in real-time. The API empowers building owners, developers, and solution partners to create new digital solutions for buildings.\n\n## API overview and usage\n\nThis API enables the following operations:\n\n**Monitoring**\n- Check occupancy of a space or workspace\n- Check attendance of a space\n- Generate occupancy report\n\n**Control**\n- Check and control A/C\n- Check and control blinds & shutters\n- Check and control lightings\n- Check comfort level, CO2, humidity, temperature, noise, brightness, and COV\n\n# Documentation\n    \n## How to sign up\n    \n**Step 1:** [Register or login](https://exchange.se.com) with an Exchange account.\n\n**Step 2:** Subscribe to the [API product in our Shop](https://exchange.se.com).\n\n**Step 3:** After subscription, API credentials and usage details for the API are available in developer portal.\n\n## Authentication guide\n\nThis API supports the following authentication mechanism. If you are an ISV requiring access to Schneider Electric customer data then use [Oauth2 Authorization Code Grant](#Oauth2AuthCode) authorization schema, if you are a Schneider Electric customer using the API to access your own data then use [Personal Access Token](#PersonalAccessToken) authorization.\n\n<!-- ReDoc-Inject: <security-definitions> -->\n\n## Code Samples\n\nYou can leverage the code samples provided to integrate the API faster in your application.\n\n* ### <a href=\"https://github.com/ecostruxure-openapi/building-management-api\" target=\"_blank\">Postman Collection</a>\n\n## Version History\n\n|Version|Notes|\n|-------|-----|\n|1.3.0|Following comfort measurements are added. <ul><li>Pressure</li><li>Particles < 1µm</li><li>Particles < 2.5µm</li><li>Particles < 4µm</li><li>Particles < 10µm</li></ul>|\n|1.2.0|Following comfort measurements are added. <ul><li>Noise</li><li>COV (or VOCs for \"Volatile organic compound\") concentration</li><li>Brightness</li></ul>|\n|1.1.0|Response structure updated to include space id and timestamp across all resources.|\n|1.0.0|Initial version.|\n## Support\n\nContact the SE Exchange support team at exchange.support@se.com and include,\n\n    - Endpoint URL\n    - Request/Response of the URL\n    - Any additional information like Screenshots, Postman collections\n",
+    "license": {
+      "name": "Schneider Electric restricted.",
+      "url": "https://se.com"
+    },
+    "contact": {
+      "name": "Schneider Electric",
+      "url": "https://se.com"
+    },
+    "version": "1.3.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.exchange.se.com/ecostruxure/building-mgmt"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Occupancy",
+      "description": "Everything about occupancy details for a site."
+    },
+    {
+      "name": "Count",
+      "description": "Space count related API resources."
+    },
+    {
+      "name": "A/C",
+      "description": "A/C control API resources."
+    },
+    {
+      "name": "Comfort",
+      "description": "Comfort control API resources."
+    },
+    {
+      "name": "Blinds & Shutters",
+      "description": "Blinds & Shutters control API resources."
+    },
+    {
+      "name": "Lighting",
+      "description": "Lighting control API resources."
+    },
+    {
+      "name": "Scene",
+      "description": "Scene control API resources."
+    }
+  ],
+  "x-tagGroups": [
+    {
+      "name": "API Specification",
+      "tags": [
+        "Occupancy",
+        "Count",
+        "A/C",
+        "Comfort",
+        "Blinds & Shutters",
+        "Lighting",
+        "Scene"
+      ]
+    }
+  ],
+  "paths": {
+    "/v1/sites/{siteId}/spaces/{spaceId}/occupancy": {
+      "get": {
+        "summary": "Fetch space occupancy",
+        "operationId": "getSpaceOccupancy",
+        "description": "Get a space occupancy status using site and space reference.",
+        "tags": [
+          "Occupancy"
+        ],
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "62fb9d62b043be1240374a9d"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1.1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space occupancy details found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SpaceOccupancy-v1"
+                },
+                "examples": {
+                  "Available": {
+                    "value": {
+                      "spaceId": "SP-123",
+                      "type": "occupancy",
+                      "value": 1,
+                      "normalizedValue": "AVAILABLE",
+                      "updatedAt": "2023-01-01T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:occupancy"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:occupancy"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/workplace-occupancies": {
+      "get": {
+        "summary": "List workplace occupancies",
+        "operationId": "listWorkplaceOccupancy",
+        "description": "Get all workspace occupancy status using site and space reference.",
+        "tags": [
+          "Occupancy"
+        ],
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "62fb9d62b043be1240374a9d"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1.1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workplace occupancy details found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkspaceOccupancy-v1"
+                  }
+                },
+                "examples": {
+                  "Available": {
+                    "value": [
+                      {
+                        "workspaceId": "SI.0.12345-1",
+                        "type": "occupancy",
+                        "value": 1,
+                        "normalizedValue": "AVAILABLE",
+                        "updatedAt": "2023-01-01T12:00:00Z"
+                      },
+                      {
+                        "workspaceId": "SI.0.12345-2",
+                        "type": "occupancy",
+                        "value": 1,
+                        "normalizedValue": "AVAILABLE",
+                        "updatedAt": "2023-01-01T12:00:00Z"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:occupancy"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:occupancy"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/workplaces/{workplaceId}/occupancy": {
+      "get": {
+        "summary": "Fetch workplace occupancy",
+        "operationId": "getWorkplaceOccupancy",
+        "description": "Get a workspace occupancy status using site, space and workspace reference.",
+        "tags": [
+          "Occupancy"
+        ],
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "62fb9d62b043be1240374a9d"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1.1"
+            }
+          },
+          {
+            "name": "workplaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1.1-1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workplace occupancy details found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WorkspaceOccupancy-v1"
+                },
+                "examples": {
+                  "Available": {
+                    "value": {
+                      "workspaceId": "SI.0.12345-1",
+                      "type": "occupancy",
+                      "value": 1,
+                      "normalizedValue": "AVAILABLE",
+                      "updatedAt": "2023-01-01T12:00:00Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:occupancy"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:occupancy"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/occupancy-analytics": {
+      "post": {
+        "summary": "Generate occupancy analytics",
+        "operationId": "generateOccupancyAnalytics",
+        "description": "Generate space occupancy analytics details for given site and filter criteria.",
+        "tags": [
+          "Occupancy"
+        ],
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "62fb9d62b043be1240374a9d"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyticsRequest-v1"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Space occupancy analytics details generated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyticsResult-v1"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:occupancy"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:occupancy"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/occupancy-webhooks": {
+      "put": {
+        "operationId": "updateOccupancyWebhooks",
+        "summary": "Track occupancy changes",
+        "tags": [
+          "Occupancy"
+        ],
+        "description": "Whenever a change occurs in a room (whether it concerns occupancy or counting), the proxy can notify an external platform.\n\nAfter each query, the changes will be sent to the configured webhook as a POST request with the following JSON body :\n* For occupancy webhooks :\n```{json}\n[\n  {\n    spaceId: key,\n    occupancy_status: newStatus,\n    normalized_occupancy_status: newNormalizedStatus,\n    occupancy_status_updated_at: modificationDate\n  }, \n  ...\n]\n```\n* For counting webhooks : \n```{json}\n[\n  {\n    spaceId: key,\n    count: number,\n    count_updated_at: modificationDate\n  }, \n  ...\n]\n```\n",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookRequest-v1"
+              },
+              "examples": {
+                "space-change-webhook": {
+                  "summary": "Track space changes.",
+                  "value": {
+                    "webhook": {
+                      "url": "https://myService/notification/occupancyStatusChanges",
+                      "headers": [
+                        "key1:val1",
+                        "key2:val2"
+                      ]
+                    },
+                    "pivot": {
+                      "pivot_piece": [
+                        {
+                          "building": "T-POLE",
+                          "i_control_id": "BL-02-010",
+                          "reference": "BL-02-010",
+                          "occupancy_type": "ICONTROL",
+                          "bookable": true
+                        },
+                        {
+                          "building": "T-POLE",
+                          "i_control_id": "BL-02-016",
+                          "reference": "BL-02-016",
+                          "occupancy_type": "ICONTROL",
+                          "bookable": true
+                        }
+                      ]
+                    }
+                  }
+                },
+                "workspace-change-webhook": {
+                  "summary": "Track workspace changes.",
+                  "value": {
+                    "workplaceWebhook": {
+                      "url": "https://myService/notification/occupancyStatusChanges",
+                      "headers": [
+                        "key1:val1",
+                        "key2:val2"
+                      ]
+                    },
+                    "pivot": {
+                      "pivot_piece": [
+                        {
+                          "building": "T-POLE",
+                          "i_control_id": "BL-02-010",
+                          "reference": "BL-02-010",
+                          "occupancy_type": "ICONTROL",
+                          "bookable": true
+                        },
+                        {
+                          "building": "T-POLE",
+                          "i_control_id": "BL-02-016",
+                          "reference": "BL-02-016",
+                          "occupancy_type": "ICONTROL",
+                          "bookable": true
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhooks updated"
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:occupancy"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:occupancy"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/count": {
+      "get": {
+        "summary": "Fetch space count",
+        "operationId": "getSpaceCount-v1",
+        "description": "Get a space count using site and space reference.",
+        "tags": [
+          "Count"
+        ],
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "62fb9d62b043be1240374a9d"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "1.1"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space count details found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Count-v1"
+                },
+                "examples": {
+                  "success": {
+                    "value": {
+                      "spaceId": "SP-123",
+                      "type": "counting",
+                      "value": 45,
+                      "updatedAt": "2022-12-12T13:14:15.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:occupancy"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:occupancy"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/ac/offset": {
+      "post": {
+        "summary": "Control A/C offset",
+        "operationId": "setAcOffset-v1",
+        "tags": [
+          "A/C"
+        ],
+        "description": "Control the AC the temperature offset. \n\nThe temperature offset value is ranging from -3.0 to +3.0 with 0.5 step. Supported commands are :\n* \"AC_UP\": increase T° setpoint \n* \"AC_DW\": decrease T° setpoint\n* \"SET\": directly set the desired value\n\nIf `SET` is passed, a field `value` needs to be provided.\n\nThe command can be repeated several times by setting the \"repeats\" parameter.\n",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "AC Offset Control",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "enum": [
+                      "AC_UP",
+                      "AC_DW",
+                      "SET"
+                    ]
+                  },
+                  "repeats": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12
+                  },
+                  "value": {
+                    "type": "number",
+                    "minimum": -3,
+                    "maximum": 3,
+                    "multipleOf": 0.5
+                  }
+                },
+                "required": [
+                  "command"
+                ]
+              },
+              "examples": {
+                "reduce-offset": {
+                  "summary": "Reduce offset twice",
+                  "value": {
+                    "command": "AC_DW",
+                    "repeats": 2
+                  }
+                },
+                "increase-offset": {
+                  "summary": "Increase offset once",
+                  "value": {
+                    "command": "AC_UP",
+                    "repeats": 1
+                  }
+                },
+                "set-offset": {
+                  "summary": "Set offset value",
+                  "value": {
+                    "command": "SET",
+                    "value": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "AC offset set successfully",
+            "content": {
+              "application/json": {
+                "example": null
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "write:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "write:control"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "summary": "Fetch A/C offset",
+        "operationId": "getAcOffset-v1",
+        "tags": [
+          "A/C"
+        ],
+        "description": "Get the AC temperature offset in the specified space.\n\nIt returns the temperature offset value ranging from -3.0 to +3.0. If not yet available, a 404 is returned with reason.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AC offset",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcOffset-v1"
+                },
+                "examples": {
+                  "Offset-in-celsius": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "ac-offset",
+                      "value": "1.5",
+                      "unit": "°C"
+                    },
+                    "summary": "A sample without unit."
+                  },
+                  "Offset-in-fahrenheit": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "ac-offset",
+                      "value": "1.5",
+                      "unit": "°F"
+                    },
+                    "summary": "A sample with 1.5 degree celsius offset."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/ac/offset/directive": {
+      "get": {
+        "summary": "Fetch A/C offset Directive",
+        "operationId": "getAcOffsetDirective-v1",
+        "tags": [
+          "A/C"
+        ],
+        "description": "Get the AC temperature offset directive in the specified space.\n\nIt returns the range of allowed offset in a JSON object with values \"min\" and \"max\" specified. If not yet available, a 404 is returned with reason.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AC offset Directive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcOffsetDirective-v1"
+                },
+                "examples": {
+                  "simple-example": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "ac-offset-directive",
+                      "value": {
+                        "min": "-3",
+                        "max": "3"
+                      },
+                      "unit": "°C"
+                    },
+                    "summary": "A sample example."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/ac/fan-speed": {
+      "post": {
+        "summary": "Control A/C Fan Speed",
+        "operationId": "setAcFanSpeed-v1",
+        "tags": [
+          "A/C"
+        ],
+        "description": "Control the AC fan speed. \n\nSupported commands are :\n* \"AC_S1\": activate Speed 1,\n* \"AC_S2\": activate Speed 2,\n* \"AC_S3\": activate Speed 3\n",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "AC Fan Speed Control",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "enum": [
+                      "AC_S1",
+                      "AC_S2",
+                      "AC_S3"
+                    ]
+                  }
+                },
+                "required": [
+                  "command"
+                ]
+              },
+              "examples": {
+                "speed-1": {
+                  "summary": "Set speed 1",
+                  "value": {
+                    "command": "AC_S1"
+                  }
+                },
+                "speed-2": {
+                  "summary": "Set speed 2",
+                  "value": {
+                    "command": "AC_S2"
+                  }
+                },
+                "speed-3": {
+                  "summary": "Set speed 3",
+                  "value": {
+                    "command": "AC_S3"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "AC fan speed set successfully",
+            "content": {
+              "application/json": {
+                "example": null
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "write:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "write:control"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "summary": "Fetch A/C Fan Speed",
+        "operationId": "getAcFanSpeed-v1",
+        "tags": [
+          "A/C"
+        ],
+        "description": "It returns the AC fan speed in the specified space. \n\nPossible values returned :\n* \"AUTO\": Auto mode,\n* \"V1\": Speed 1, \n* \"V2\": Speed 2, \n* \"V3\": Speed 3",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AC fan speed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcFanSpeed-v1"
+                },
+                "examples": {
+                  "FanSpeed-Auto": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "value": "AUTO",
+                      "type": "fan-speed",
+                      "unit": null
+                    },
+                    "summary": "Fan speed set to Auto."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/ac/mode": {
+      "post": {
+        "summary": "Control A/C mode",
+        "operationId": "setAcMode-v1",
+        "tags": [
+          "A/C"
+        ],
+        "description": "Control the AC mode. \n\nSupported commands are :\n* \"AC_ON\": force AC activation ,\n* \"AC_OFF\": stop,\n* \"AC_AUTO\": switch to Auto mode\n",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "AC Mode Control",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "enum": [
+                      "AC_ON",
+                      "AC_OFF",
+                      "AC_AUTO"
+                    ]
+                  }
+                },
+                "required": [
+                  "command"
+                ]
+              },
+              "examples": {
+                "ac-on": {
+                  "summary": "Force AC activation",
+                  "value": {
+                    "command": "AC_ON"
+                  }
+                },
+                "ac-auto": {
+                  "summary": "Switch to auto mode",
+                  "value": {
+                    "command": "AC_AUTO"
+                  }
+                },
+                "ac-off": {
+                  "summary": "Stop AC",
+                  "value": {
+                    "command": "AC_OFF"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "AC mode set successfully",
+            "content": {
+              "application/json": {
+                "example": null
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "write:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "write:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/ac/zones": {
+      "get": {
+        "summary": "Fetch A/C Zones",
+        "operationId": "getAcZones-v1",
+        "tags": [
+          "A/C"
+        ],
+        "description": "It returns the AC zones numbers in the specified space.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AC Zones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AcZones-v1"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "ac-zones",
+                      "value": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14,
+                        15,
+                        16
+                      ],
+                      "unit": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/humidity": {
+      "get": {
+        "summary": "Fetch Humidity",
+        "operationId": "getComfortHumidity-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the humidity percentage in the specified space.\n\nIt returns a value between 0-100.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space humidity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Humidity-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "humidity",
+                      "value": "29.2000007629395",
+                      "unit": "%"
+                    },
+                    "summary": "A sample humidity measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/co2": {
+      "get": {
+        "summary": "Fetch CO2 level",
+        "operationId": "getComfortCo2-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the CO2 level in the specified space (in ppm).\n\nIt returns a numeric value greater than 0.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space CO2",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CO2-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "co2",
+                      "value": "544.804748535156",
+                      "unit": "ppm"
+                    },
+                    "summary": "A sample CO2 measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/temperature": {
+      "get": {
+        "summary": "Fetch Temperature",
+        "operationId": "getComfortTemperature-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the current temperature in the specified space (displayed in degrees Celsius).\n\nIt returns a numeric value",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space temperature",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Temperature-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "temperature",
+                      "value": "20.7999992370605",
+                      "unit": "°C"
+                    },
+                    "summary": "A sample temperature measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/noise": {
+      "get": {
+        "summary": "Fetch Noise",
+        "operationId": "getComfortNoise-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the noise level in the specified space (in dB).\n\nIt returns a value greater than 0.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space noise",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Noise-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "noise",
+                      "value": "36.123007472921",
+                      "unit": "dB"
+                    },
+                    "summary": "A sample noise measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/cov": {
+      "get": {
+        "summary": "Fetch COV concentration",
+        "operationId": "getComfortCOV-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the COV (or VOCs for \"Volatile organic compound\") concentration in the specified space (in ppb).\n\nIt returns a numeric value greater than 0.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space COV concentration",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/COV-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "cov",
+                      "value": "150",
+                      "unit": "ppb"
+                    },
+                    "summary": "A sample COV concentration."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/brightness": {
+      "get": {
+        "summary": "Fetch Brightness",
+        "operationId": "getComfortBrightness-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the level of luminance in the specified space (in lux).\n\nIt returns a numeric value greater than 0.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space brightness",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Brightness-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "brightness",
+                      "value": "834.873551198641",
+                      "unit": "lux"
+                    },
+                    "summary": "A sample brightness measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/pressure": {
+      "get": {
+        "summary": "Fetch Pressure",
+        "operationId": "getComfortPressure-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the level of pressure in the specified space (in hPa).\n\nIt returns a numeric value greater than 0.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space pressure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Pressure-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "pressure",
+                      "value": "834.873551198641",
+                      "unit": "hPa"
+                    },
+                    "summary": "A sample pressure measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/pm1": {
+      "get": {
+        "summary": "Fetch particles < 1 µm",
+        "operationId": "getComfortPM1-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the number of particles < 1 µm in the specified space (in μg/m3).\n\nIt returns a numeric value greater than 0.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space particles < 1 µm",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PM1-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "pm1",
+                      "value": "8.41",
+                      "unit": "μg/m3"
+                    },
+                    "summary": "A sample particles < 1 µm measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/pm25": {
+      "get": {
+        "summary": "Fetch particles < 2.5 µm",
+        "operationId": "getComfortPM25-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the number of particles < 2.5 µm in the specified space (in μg/m3).\n\nIt returns a numeric value greater than 0.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space particles < 2.5 µm",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PM25-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "pm25",
+                      "value": "8.98",
+                      "unit": "μg/m3"
+                    },
+                    "summary": "A sample particles < 2.5 µm measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/pm4": {
+      "get": {
+        "summary": "Fetch particles < 4 µm",
+        "operationId": "getComfortPM4-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the number of particles < 4 µm in the specified space (in μg/m3).\n\nIt returns a numeric value greater than 0.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space particles < 4 µm",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PM4-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "pm4",
+                      "value": "8.87",
+                      "unit": "μg/m3"
+                    },
+                    "summary": "A sample particles < 4 µm measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/comfort/pm10": {
+      "get": {
+        "summary": "Fetch particles < 10 µm",
+        "operationId": "getComfortPM10-v1",
+        "tags": [
+          "Comfort"
+        ],
+        "description": "Get the number of particles < 10 µm in the specified space (in μg/m3).\n\nIt returns a numeric value greater than 0.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Space particles < 10 µm",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PM10-v1"
+                },
+                "examples": {
+                  "humidity-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "pm10",
+                      "value": "8.89",
+                      "unit": "μg/m3"
+                    },
+                    "summary": "A sample particles < 10 µm measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:comfort"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:comfort"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/blind-shutter/position": {
+      "post": {
+        "summary": "Control blinds & shutters position",
+        "operationId": "setBlindShutterPosition-v1",
+        "tags": [
+          "Blinds & Shutters"
+        ],
+        "description": "Control the blinds and shutters. \n\nSupported commands are: \n* \"BS_UP\": roll up \n* \"BS_DW\": roll down \n* \"BS_STOP\": stop \n* \"BS_AUTO\": switch to Auto mode\n* \"SET\": set the blind's position to a value between 0-100\n\nIf `SET` is passed, a field `value` needs to be provided.\n\nIf `group` is set to 0, a space level command will be issued.\n",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "Blind Shutter Control",
+                "properties": {
+                  "group": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 16
+                  },
+                  "command": {
+                    "type": "string",
+                    "enum": [
+                      "BS_UP",
+                      "BS_DW",
+                      "BS_STOP",
+                      "BS_AUTO",
+                      "SET"
+                    ]
+                  },
+                  "value": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  }
+                },
+                "required": [
+                  "group",
+                  "command"
+                ]
+              },
+              "examples": {
+                "blinds-up": {
+                  "summary": "Blinds up across space",
+                  "value": {
+                    "group": 0,
+                    "command": "BS_UP"
+                  }
+                },
+                "blinds-50-percent": {
+                  "summary": "Blinds at 50% for group 2",
+                  "value": {
+                    "group": 2,
+                    "command": "SET",
+                    "value": 50
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Blinds shutter position set successfully",
+            "content": {
+              "application/json": {
+                "example": null
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "write:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "write:control"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "summary": "Fetch blinds & shutters position",
+        "operationId": "getBlindShutterPosition-v1",
+        "tags": [
+          "Blinds & Shutters"
+        ],
+        "description": "It returns the position of blinds and shutter in percentage",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "group",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blinds & shutter position",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlindsAndShutters-v1"
+                },
+                "examples": {
+                  "position-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "blind-shutters",
+                      "value": "50",
+                      "unit": "%"
+                    },
+                    "summary": "A sample position measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/blind-shutter/angle": {
+      "post": {
+        "summary": "Control blinds & shutters angle",
+        "operationId": "setBlindShutterAngle-v1",
+        "tags": [
+          "Blinds & Shutters"
+        ],
+        "description": "Control the blinds angle. \n\nSupported commands are: \n- \"SET\"\n\nThe value between 0-100 needs to be provided in the field \"value\"\nIf `group` is set to 0, a space level command will be issued.\n",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "Blind Shutter Angle Control",
+                "properties": {
+                  "group": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 11
+                  },
+                  "command": {
+                    "type": "string",
+                    "enum": [
+                      "SET"
+                    ]
+                  },
+                  "value": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  }
+                },
+                "required": [
+                  "group",
+                  "command",
+                  "value"
+                ]
+              },
+              "examples": {
+                "blinds-20-percent": {
+                  "summary": "Blinds at 20% angle",
+                  "value": {
+                    "group": 0,
+                    "command": "SET",
+                    "value": 20
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Blinds shutter angle set successfully",
+            "content": {
+              "application/json": {
+                "example": null
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "write:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "write:control"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "summary": "Fetch blinds & shutters angle",
+        "operationId": "getBlindShutterAngle-v1",
+        "tags": [
+          "Blinds & Shutters"
+        ],
+        "description": "It returns the angle of blinds and shutter in percentage",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "group",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blinds & shutter angle",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlindsAndShuttersAngle-v1"
+                },
+                "examples": {
+                  "angle-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "blind-shutters-angle",
+                      "value": "75",
+                      "unit": "%"
+                    },
+                    "summary": "A sample angle measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/blind-shutter/groups": {
+      "get": {
+        "summary": "Fetch blinds & shutters groups",
+        "operationId": "getBlindShutterGroups-v1",
+        "tags": [
+          "Blinds & Shutters"
+        ],
+        "description": "Get blinds/shutters groups numbers in the specified space.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Blinds & Shutters Groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BlindsAndShuttersGroups-v1"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "blind-shutters-groups",
+                      "value": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14,
+                        15,
+                        16
+                      ],
+                      "unit": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/lighting": {
+      "post": {
+        "summary": "Control lighting",
+        "operationId": "setLighting-v1",
+        "tags": [
+          "Lighting"
+        ],
+        "description": "Control the lighting. \n\nSupported commands are: \n* \"L_ON\": switch on lights \n* \"L_OFF\": switch off lights \n* \"L_UP\": launch dim up \n* \"L_DW\": launch dim down \n* \"L_AUTO\": switch to Auto mode \n* \"L_STOP\": stop dimming\n* \"SET\": set the lights to a value between 0-100\n\nIf `SET` is passed, a field `value` needs to be provided.\n\nIf `zone` is set to 0, a space level command will be issued.\n",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "Lighting control",
+                "properties": {
+                  "zone": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 16
+                  },
+                  "command": {
+                    "type": "string",
+                    "enum": [
+                      "L_ON",
+                      "L_OFF",
+                      "L_UP",
+                      "L_DW",
+                      "L_AUTO",
+                      "L_STOP",
+                      "SET"
+                    ]
+                  },
+                  "value": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100
+                  }
+                },
+                "required": [
+                  "zone",
+                  "command"
+                ]
+              },
+              "examples": {
+                "lights-ON": {
+                  "summary": "Lights ON",
+                  "value": {
+                    "zone": 1,
+                    "command": "L_ON"
+                  }
+                },
+                "lights-OFF": {
+                  "summary": "Lights OFF",
+                  "value": {
+                    "zone": 1,
+                    "command": "L_OFF"
+                  }
+                },
+                "lights-SET": {
+                  "summary": "Set light intensity",
+                  "value": {
+                    "zone": 1,
+                    "command": "SET",
+                    "value": 75
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Lights set successfully",
+            "content": {
+              "application/json": {
+                "example": null
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "write:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "write:control"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "summary": "Fetch lighting",
+        "operationId": "getLighting-v1",
+        "tags": [
+          "Lighting"
+        ],
+        "description": "It returns the lighting intensity in percentage.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "zone",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 16
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lighting intensity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lighting-v1"
+                },
+                "examples": {
+                  "light-percent": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "lighting",
+                      "value": "75",
+                      "unit": "%"
+                    },
+                    "summary": "A sample lighting measurement."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/lighting/zones": {
+      "get": {
+        "summary": "Fetch lighting zones",
+        "operationId": "getLightingZones-v1",
+        "tags": [
+          "Lighting"
+        ],
+        "description": "Get lighting zone numbers in the specified space.",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lighting Zones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LightingZones-v1"
+                },
+                "examples": {
+                  "response": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "lighting-zones",
+                      "value": [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14,
+                        15,
+                        16
+                      ],
+                      "unit": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/lighting/mode": {
+      "get": {
+        "summary": "Fetch lighting mode",
+        "operationId": "getLightingMode-v1",
+        "tags": [
+          "Lighting"
+        ],
+        "description": "It returns the lighting mode, following values are possible.\n- MODE_AUTO\n- MODE_MANUAL",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lighting mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LightingMode-v1"
+                },
+                "examples": {
+                  "light-auto": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "lighting-state",
+                      "value": "MODE_AUTO",
+                      "unit": null
+                    },
+                    "summary": "A sample for auto mode."
+                  },
+                  "light-manual": {
+                    "value": {
+                      "spaceId": "N3-34-BUR",
+                      "timestamp": "2023-03-15T15:45:56.876z",
+                      "type": "lighting-state",
+                      "value": "MODE_MANUAL",
+                      "unit": null
+                    },
+                    "summary": "A sample for manual mode."
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error404"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "read:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "read:control"
+            ]
+          }
+        ]
+      }
+    },
+    "/v1/sites/{siteId}/spaces/{spaceId}/scenes/mode": {
+      "post": {
+        "summary": "Control scenes mode",
+        "operationId": "setScenesMode-v1",
+        "tags": [
+          "Scene"
+        ],
+        "description": "Set the different scenes to their AUTO mode. \n\nSupported commands are :\n* \"AUTO\": Set to auto mode.\n\nOnly auto mode is supported.\n",
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "spaceId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "title": "Scene Mode Control",
+                "properties": {
+                  "command": {
+                    "type": "string",
+                    "enum": [
+                      "AUTO"
+                    ]
+                  }
+                },
+                "required": [
+                  "command"
+                ]
+              },
+              "examples": {
+                "auto": {
+                  "summary": "Auto mode activation",
+                  "value": {
+                    "command": "AUTO"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Scene mode set successfully",
+            "content": {
+              "application/json": {
+                "example": null
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error400"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error401"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error403"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error500"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "Oauth2AuthCode": [
+              "write:control"
+            ]
+          },
+          {
+            "PersonalAccessToken": [
+              "write:control"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "Oauth2AuthCode": {
+        "type": "oauth2",
+        "description": "OAuth2 Authorization flow",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://api.exchange.se.com/ecostruxure/v1/oauth/authorize",
+            "tokenUrl": "https://api.exchange.se.com/ecostruxure/v1/oauth/token",
+            "refreshUrl": "https://api.exchange.se.com/ecostruxure/v1/oauth/token",
+            "scopes": {
+              "read:occupancy": "Read access to building occupancy data",
+              "read:comfort": "Read access to building comfort data like humidity, noise, temperature, etc.",
+              "read:control": "Read access to building controls like lights, blinds & shutters and A/C",
+              "write:control": "Write access to building controls like lights, blinds & shutters and A/C",
+              "offline_access": "Maintain access to data offline."
+            }
+          }
+        }
+      },
+      "PersonalAccessToken": {
+        "type": "http",
+        "description": "Personal access token based authentication and authorization. You can generate personal access token for APIs through Schneider Electric Developer Portal.",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "Occupancy-v1": {
+        "type": "object",
+        "description": "Occupancy details.",
+        "properties": {
+          "type": {
+            "type": "string",
+            "default": "occupancy",
+            "description": "Occupancy type"
+          },
+          "value": {
+            "type": "integer",
+            "description": "Occupancy status, 1 indicates occupied and 0 indicated non-occupied."
+          },
+          "normalizedValue": {
+            "type": "string",
+            "description": "Normalized occupancy status.",
+            "enum": [
+              "OCCUPIED",
+              "AVAILABLE",
+              "ERROR",
+              "INDETERMINATE",
+              "IN_PROGRESS"
+            ]
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the occupancy status was last updated."
+          }
+        }
+      },
+      "SpaceOccupancy-v1": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "spaceId": {
+                "type": "string",
+                "description": "Space reference id."
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/Occupancy-v1"
+          }
+        ]
+      },
+      "Error400": {
+        "type": "object",
+        "title": "Validation error",
+        "description": "Error occurred while validating the request (based on rfc7807)",
+        "properties": {
+          "type": {
+            "description": "A URI reference [RFC3986] that identifies the problem type.",
+            "type": "string",
+            "format": "uri",
+            "example": "https://ecostructure-openapi.se.com/problem/validation-error"
+          },
+          "title": {
+            "description": "A short, human-readable summary of the problem type.",
+            "type": "string",
+            "example": "Invalid Request"
+          },
+          "status": {
+            "description": "The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.",
+            "type": "number",
+            "example": 400
+          },
+          "detail": {
+            "description": "A human-readable explanation specific to this occurrence of the problem.",
+            "type": "string",
+            "example": "Provided input request parameter is not valid."
+          },
+          "invalidParams": {
+            "description": "An array of validation errors.",
+            "type": "array",
+            "items": {
+              "description": "The validation error descriptor.",
+              "type": "object",
+              "required": [
+                "in",
+                "name",
+                "reason"
+              ],
+              "properties": {
+                "in": {
+                  "type": "string",
+                  "enum": [
+                    "path",
+                    "query",
+                    "header"
+                  ],
+                  "example": "query"
+                },
+                "name": {
+                  "type": "string",
+                  "example": "param1"
+                },
+                "reason": {
+                  "type": "string",
+                  "example": "param1 does not match the expected pattern."
+                }
+              },
+              "additionalProperties": false
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "Error401": {
+        "type": "object",
+        "title": "Authorization error",
+        "description": "Error occurred while authorizing the request (based on rfc7807)",
+        "properties": {
+          "type": {
+            "description": "A URI reference [RFC3986] that identifies the problem type.",
+            "type": "string",
+            "format": "uri",
+            "example": "https://ecostructure-openapi.se.com/problem/unauthorized"
+          },
+          "title": {
+            "description": "A short, human-readable summary of the problem type.",
+            "type": "string",
+            "example": "Unauthorized"
+          },
+          "status": {
+            "description": "The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.",
+            "type": "number",
+            "example": 401
+          },
+          "detail": {
+            "description": "A human-readable explanation specific to this occurrence of the problem.",
+            "type": "string",
+            "example": "Access Token expired"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "Error404": {
+        "type": "object",
+        "title": "Not found error",
+        "description": "Error occurred while authorizing the request (based on rfc7807)",
+        "properties": {
+          "type": {
+            "description": "A URI reference [RFC3986] that identifies the problem type.",
+            "type": "string",
+            "format": "uri",
+            "example": "https://ecostructure-openapi.se.com/problem/not-found"
+          },
+          "title": {
+            "description": "A short, human-readable summary of the problem type.",
+            "type": "string",
+            "example": "Not Found"
+          },
+          "status": {
+            "description": "The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.",
+            "type": "number",
+            "example": 404
+          },
+          "detail": {
+            "description": "A human-readable explanation specific to this occurrence of the problem.",
+            "type": "string",
+            "example": "Resource not found for provided identifier."
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "Error500": {
+        "type": "object",
+        "title": "Not found error",
+        "description": "Error occurred while authorizing the request (based on rfc7807)",
+        "properties": {
+          "type": {
+            "description": "A URI reference [RFC3986] that identifies the problem type.",
+            "type": "string",
+            "format": "uri",
+            "example": "https://ecostructure-openapi.se.com/problem/server-error"
+          },
+          "title": {
+            "description": "A short, human-readable summary of the problem type.",
+            "type": "string",
+            "example": "Internal Server Error"
+          },
+          "status": {
+            "description": "The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.",
+            "type": "number",
+            "example": 500
+          },
+          "detail": {
+            "description": "A human-readable explanation specific to this occurrence of the problem.",
+            "type": "string",
+            "example": "The server encountered an unexpected condition that prevented it from fulfilling the request"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "WorkspaceOccupancy-v1": {
+        "allOf": [
+          {
+            "type": "object",
+            "properties": {
+              "workspaceId": {
+                "type": "string",
+                "description": "Workspace reference id."
+              }
+            }
+          },
+          {
+            "$ref": "#/components/schemas/Occupancy-v1"
+          }
+        ]
+      },
+      "AnalyticsRequest-v1": {
+        "type": "object",
+        "properties": {
+          "startDate": {
+            "type": "string",
+            "example": "2022-08-10"
+          },
+          "endDate": {
+            "type": "string",
+            "example": "2022-08-20"
+          },
+          "timeSegment": {
+            "properties": {
+              "startHour": {
+                "type": "integer",
+                "example": 8
+              },
+              "endHour": {
+                "type": "integer",
+                "example": 17
+              },
+              "workingDays": {
+                "type": "array",
+                "description": "Defines days from 0 (Sunday) to 6 (Saturday) as working days",
+                "items": {
+                  "type": "integer"
+                },
+                "example": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              }
+            },
+            "required": [
+              "startHour",
+              "endHour"
+            ],
+            "nullable": true,
+            "type": "object"
+          }
+        },
+        "required": [
+          "startDate",
+          "endDate"
+        ],
+        "description": "If not set, Default value for time segment :\n\n```\n\"timeSegment\": {\n\t\"startHour\": 8,\n\t\"endHour\": 18,\n\t\"workingDays\": [1, 2, 3, 4, 5]\n}\n```\n\nWorking days start from 0 (Sunday) to 6 (Saturday).\n\n\n\n"
+      },
+      "AnalyticsResult-v1": {
+        "type": "object",
+        "description": "Occupancy analysis result.",
+        "properties": {
+          "spaces": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "spaceId": {
+                  "type": "string",
+                  "example": "1.01"
+                },
+                "history": {
+                  "type": "object",
+                  "example": {
+                    "16-08-22": {
+                      "10": 0,
+                      "11": 0,
+                      "12": 1,
+                      "13": 0,
+                      "14": 0,
+                      "15": 0,
+                      "16": 0,
+                      "17": 0,
+                      "08": 0,
+                      "09": 0
+                    }
+                  }
+                }
+              },
+              "required": [
+                "spaceId"
+              ]
+            }
+          },
+          "countingSpaces": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "spaceId": {
+                  "type": "string",
+                  "example": "1.01"
+                },
+                "history": {
+                  "type": "object",
+                  "example": {
+                    "16-08-22": {
+                      "10": 0,
+                      "11": 0,
+                      "12": 1,
+                      "13": 0,
+                      "14": 0,
+                      "15": 0,
+                      "16": 0,
+                      "17": 0,
+                      "08": 0,
+                      "09": 0
+                    }
+                  }
+                }
+              },
+              "required": [
+                "spaceId"
+              ]
+            }
+          },
+          "workplaces": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "workplaceId": {
+                  "type": "string",
+                  "example": "LANOPN01BR5-1"
+                },
+                "history": {
+                  "type": "object",
+                  "example": {
+                    "16-08-22": {
+                      "10": 0,
+                      "11": 0,
+                      "12": 1,
+                      "13": 1,
+                      "14": 1,
+                      "15": 0,
+                      "16": 0,
+                      "17": 0,
+                      "08": 0,
+                      "09": 0
+                    }
+                  }
+                }
+              },
+              "required": [
+                "workplaceId"
+              ]
+            }
+          },
+          "workingDaysCount": {
+            "type": "integer",
+            "example": 10
+          }
+        },
+        "required": [
+          "spaces",
+          "workingDaysCount"
+        ]
+      },
+      "Webhook-v1": {
+        "type": "object",
+        "title": "Webhook config",
+        "properties": {
+          "url": {
+            "format": "uri",
+            "nullable": true,
+            "type": "string"
+          },
+          "headers": {
+            "items": {
+              "type": "string"
+            },
+            "nullable": true,
+            "type": "array"
+          },
+          "lease": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "minTime": {
+            "nullable": true,
+            "type": "integer"
+          },
+          "maxTime": {
+            "nullable": true,
+            "type": "integer"
+          }
+        }
+      },
+      "ProvisioningSpace-v1": {
+        "type": "object",
+        "title": "Provisioning Space",
+        "properties": {
+          "building": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Site name"
+          },
+          "reference": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Room reference "
+          },
+          "relogix_id": {
+            "description": "Occupancy type",
+            "nullable": true,
+            "type": "string"
+          },
+          "i_control_id": {
+            "description": "Room IControl ID",
+            "nullable": true,
+            "type": "string"
+          },
+          "densityio_id": {
+            "nullable": true,
+            "type": "string"
+          },
+          "zbre_id": {
+            "nullable": true,
+            "type": "string"
+          },
+          "smartconnector_id": {
+            "nullable": true,
+            "type": "string"
+          },
+          "occupancy_type": {
+            "type": "string",
+            "enum": [
+              "ICONTROL",
+              "RELOGIX",
+              "ZBRE",
+              "SMARTCONNECTOR",
+              "NONE"
+            ]
+          },
+          "bookable": {
+            "type": "boolean",
+            "description": "Bookable or not"
+          },
+          "display_name": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "title": "Display name",
+              "properties": {
+                "locale": {
+                  "type": "string"
+                },
+                "content": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "floor": {
+            "type": "string"
+          },
+          "customer_type_of_room": {
+            "type": "string"
+          },
+          "category_of_room": {
+            "nullable": true,
+            "type": "string"
+          },
+          "capacity": {
+            "type": "number",
+            "minimum": 0
+          },
+          "display_occupancy": {
+            "type": "boolean"
+          },
+          "dom_blind": {
+            "type": "boolean"
+          },
+          "dom_fan": {
+            "type": "boolean"
+          },
+          "dom_light": {
+            "type": "boolean"
+          },
+          "dom_dimmable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "reference"
+        ]
+      },
+      "WebhookRequest-v1": {
+        "type": "object",
+        "properties": {
+          "webhook": {
+            "$ref": "#/components/schemas/Webhook-v1"
+          },
+          "workplaceWebhook": {
+            "$ref": "#/components/schemas/Webhook-v1"
+          },
+          "countWebhook": {
+            "$ref": "#/components/schemas/Webhook-v1"
+          },
+          "pivot": {
+            "type": "object",
+            "properties": {
+              "pivot_piece": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ProvisioningSpace-v1"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Count-v1": {
+        "type": "object",
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "description": "Reference value for space."
+          },
+          "type": {
+            "type": "string",
+            "default": "counting",
+            "description": "Type of value."
+          },
+          "value": {
+            "type": "integer",
+            "description": "Space count value."
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Time when count was captured.",
+            "format": "date-time"
+          }
+        }
+      },
+      "MeasurementHeader-v1": {
+        "type": "object",
+        "description": "Object representing measurement unit and value.",
+        "properties": {
+          "spaceId": {
+            "type": "string",
+            "description": "Space reference id.",
+            "example": "N3-34-BUR"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the measurement.",
+            "example": "2023-03-01T12:05:47.785z"
+          }
+        }
+      },
+      "AcOffset-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a AC offset measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "ac-offset",
+                "description": "AC offset measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Offset temperature value.",
+                "example": "22"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "°C",
+                  "°F"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Error403": {
+        "type": "object",
+        "title": "Authorization error",
+        "description": "Error occurred while authorizing the request (based on rfc7807)",
+        "properties": {
+          "type": {
+            "description": "A URI reference [RFC3986] that identifies the problem type.",
+            "type": "string",
+            "format": "uri",
+            "example": "https://ecostructure-openapi.se.com/problem/forbidden"
+          },
+          "title": {
+            "description": "A short, human-readable summary of the problem type.",
+            "type": "string",
+            "example": "Forbidden"
+          },
+          "status": {
+            "description": "The HTTP status code ([RFC7231], Section 6) generated by the origin server for this occurrence of the problem.",
+            "type": "number",
+            "example": 403
+          },
+          "detail": {
+            "description": "A human-readable explanation specific to this occurrence of the problem.",
+            "type": "string",
+            "example": "Resource access is forbidden."
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "AcOffsetDirective-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a AC offset measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "ac-offset-directive",
+                "description": "AC temperature offset directive measurement."
+              },
+              "value": {
+                "type": "object",
+                "description": "AC temperature offset directive value.",
+                "properties": {
+                  "min": {
+                    "type": "string",
+                    "description": "Minimum value of the range."
+                  },
+                  "max": {
+                    "type": "string",
+                    "description": "Maximum value of the range."
+                  }
+                }
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "°C",
+                  "°F"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "AcFanSpeed-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space temperature measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "fan-speed",
+                "description": "Fan speed type measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Fan speed measurement.",
+                "enum": [
+                  "AUTO",
+                  "V1",
+                  "V2",
+                  "V3"
+                ]
+              },
+              "unit": {
+                "type": "string",
+                "default": null,
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "AcZones-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing AC zones for a space.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "ac-zones",
+                "description": "Available AC zones."
+              },
+              "value": {
+                "type": "array",
+                "title": "Zones of control units.",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 16
+                }
+              },
+              "unit": {
+                "type": "string",
+                "default": null,
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "Humidity-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space humidity measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "humidity",
+                "description": "Humidity measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Percentage value.",
+                "example": "60"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "%",
+                  "percentage"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "CO2-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space parts per million measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "co2",
+                "description": "CO2 measurement type."
+              },
+              "value": {
+                "type": "string",
+                "description": "PPM value.",
+                "example": "544.804748535156"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "ppm"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Temperature-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space temperature measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "temperature",
+                "description": "Temperature measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Temperature value.",
+                "example": "22"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "°C",
+                  "°F"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Noise-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space noise measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "noise",
+                "description": "Noise measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Measurement value.",
+                "example": "36.123007472921"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "dB"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "COV-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space COV (or VOCs for \"Volatile organic compound\") concentration measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "cov",
+                "description": "COV measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Measurement value.",
+                "example": "150"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "ppb"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Brightness-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space brightness measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "brightness",
+                "description": "Brightness measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Measurement value.",
+                "example": "150"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "lux"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "Pressure-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space pressure measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "pressure",
+                "description": "Pressure measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Measurement value.",
+                "example": "834.873551198641"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "hPa"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "PM1-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space particles < 1 µm measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "pm1",
+                "description": "Particles < 1 µm measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Measurement value.",
+                "example": "8.41"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "μg/m3"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "PM25-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space particles < 2.5 µm measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "pm25",
+                "description": "Particles < 2.5 µm measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Measurement value.",
+                "example": "8.98"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "μg/m3"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "PM4-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space particles < 4 µm measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "pm4",
+                "description": "Particles < 4 µm measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Measurement value.",
+                "example": "8.87"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "μg/m3"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "PM10-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space particles < 10 µm measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "pm10",
+                "description": "Particles < 10 µm measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Measurement value.",
+                "example": "8.89"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "μg/m3"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "BlindsAndShutters-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a blinds and shutter position measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "blind-shutters",
+                "description": "Blind shutters measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Percentage value.",
+                "example": "60"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "%",
+                  "percentage"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "BlindsAndShuttersAngle-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a blinds and shutter angle measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "blind-shutters-angle",
+                "description": "Blind shutters angle measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Percentage value.",
+                "example": "60"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "%",
+                  "percentage"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "BlindsAndShuttersGroups-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing Blinds and Shutters details.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "blind-shutters-groups",
+                "description": "Groups configured on blinds and shutters in a space."
+              },
+              "value": {
+                "type": "array",
+                "title": "Groups of control units.",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 16
+                }
+              },
+              "unit": {
+                "type": "string",
+                "default": null,
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "Lighting-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space percentage measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "lighting",
+                "description": "Lighting measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Percentage value.",
+                "example": "60"
+              },
+              "unit": {
+                "type": "string",
+                "description": "Unit of measurement",
+                "enum": [
+                  "%",
+                  "percentage"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "LightingZones-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing lighting zones.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "lighting-zones",
+                "description": "Available lighting zones for a space."
+              },
+              "value": {
+                "type": "array",
+                "title": "Zones of control units.",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 16
+                }
+              },
+              "unit": {
+                "type": "string",
+                "default": null,
+                "nullable": true
+              }
+            }
+          }
+        ]
+      },
+      "LightingMode-v1": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MeasurementHeader-v1"
+          },
+          {
+            "type": "object",
+            "description": "Object containing a space temperature measurement.",
+            "properties": {
+              "type": {
+                "type": "string",
+                "default": "lighting-state",
+                "description": "Lighting mode measurement."
+              },
+              "value": {
+                "type": "string",
+                "description": "Fan speed measurement.",
+                "enum": [
+                  "MODE_AUTO",
+                  "MODE_MANUAL"
+                ]
+              },
+              "unit": {
+                "type": "string",
+                "default": null,
+                "nullable": true
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
